@@ -1,0 +1,171 @@
+# Sahaf — Complete Documentation
+
+Local PDF & EPUB to Markdown converter with automatic digital/scanned detection, OCR support, smart splitting, and page-range selection. Converts books to clean, self-contained Markdown files with embedded images using Marker (95.67% accuracy) and Surya OCR (90+ languages). No cloud APIs — runs entirely on your hardware.
+
+## Install
+
+```bash
+git clone https://github.com/arikusi/sahaf.git
+cd sahaf
+pip install -e .
+```
+
+Marker models (~2-3GB) are downloaded automatically on first conversion. Requires Python 3.10+, 4-6GB RAM.
+
+## Run
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+Open http://localhost:8000.
+
+## Architecture
+
+```
+sahaf/
+├── backend/
+│   ├── main.py              # FastAPI app, static mount
+│   ├── api.py               # REST endpoints
+│   ├── classifier.py        # PDF type detection (PyMuPDF)
+│   ├── converter.py         # Marker PDF→Markdown + page range extraction
+│   ├── epub_converter.py    # EPUB→Markdown (ebooklib + markdownify)
+│   ├── splitter.py          # Smart markdown splitting
+│   ├── models.py            # Dataclass schemas
+│   └── config.py            # Constants and paths
+├── frontend/
+│   ├── index.html           # Single-page app (bilingual TR/EN)
+│   ├── css/style.css        # Lavender dark/light theme
+│   └── js/
+│       ├── lang.js          # i18n strings (TR/EN)
+│       ├── app.js           # State machine + events
+│       ├── api.js           # Fetch wrappers
+│       └── ui.js            # DOM helpers
+├── uploads/                 # Runtime: uploaded files
+└── outputs/                 # Runtime: conversion results
+```
+
+## Flow
+
+1. POST /api/upload — save PDF/EPUB, return task_id
+2. GET /api/classify/{task_id} — PDF analysis or EPUB chapter count
+3. POST /api/convert/{task_id}?page_from=N&page_to=M — convert (optional range)
+4. GET /api/status/{task_id} — poll every 2 seconds
+5. GET /api/result/{task_id} — markdown + image list
+6. GET /api/split-preview/{task_id}?parts=N — preview split structure
+7. GET /api/download/{task_id}/zip?parts=N — ZIP with embedded images
+
+## API Reference
+
+### POST /api/upload
+Upload a PDF or EPUB file. Multipart form with `file` field.
+Accepted extensions: .pdf, .epub. Max size: 200MB.
+
+Response: `{"task_id": "abc123def456", "filename": "book.pdf"}`
+
+### GET /api/classify/{task_id}
+Classifies PDF as digital, scanned, or mixed. For EPUB, returns chapter_count.
+
+PDF classification rules per page:
+- Text >= 50 chars AND image coverage < 80% → digital page
+- Otherwise → scanned page
+- Result: all digital → "digital", all scanned → "scanned", mix → "mixed"
+
+Response (PDF): `{"task_id": "...", "pdf_type": "digital", "page_count": 270}`
+Response (EPUB): `{"task_id": "...", "pdf_type": "digital", "page_count": 0, "chapter_count": 47}`
+
+### POST /api/convert/{task_id}
+Starts background conversion. Optional query params:
+- `page_from` (int, 1-indexed): first page/chapter to convert (0 = from start)
+- `page_to` (int, 1-indexed): last page/chapter to convert (0 = to end)
+
+For PDF: extracts page range with PyMuPDF before passing to Marker.
+For EPUB: filters spine chapters by index.
+
+Response: `{"task_id": "...", "status": "converting"}`
+
+### GET /api/status/{task_id}
+Poll conversion progress.
+Status values: uploaded, classifying, classified, converting, completed, failed
+
+Response: `{"task_id": "...", "status": "converting", "progress": 45, ...}`
+
+### GET /api/result/{task_id}
+Get conversion result when completed.
+
+Response: `{"task_id": "...", "markdown": "# Chapter 1\n...", "images": ["img1.png"], ...}`
+
+### GET /api/download/{task_id}
+Download single .md file with all images embedded as base64 data URIs.
+
+### GET /api/download/{task_id}/zip?parts=N
+Download ZIP file. When parts=1 (default): single .md file. When parts>1: split into N files
+(e.g. book_part01.md, book_part02.md, ...) using smart splitting algorithm.
+All images embedded as base64 — no separate images folder.
+
+### GET /api/split-preview/{task_id}?parts=N
+Preview how the markdown would be split. Returns part sizes and first lines.
+
+Response: `{"total_parts": 5, "total_chars": 361895, "parts": [{"part": 1, "chars": 66474, "lines": 991, "starts_with": "..."}, ...]}`
+
+### GET /api/images/{task_id}/{name}
+Serve extracted image by name (used by web preview).
+
+## Smart Splitting Algorithm
+
+The splitter finds optimal cut points in markdown text:
+1. Scans for candidate split points: H1 headers (score 100), H2 (90), horizontal rules (85), H3 (80), H4-H6 (70), paragraph breaks (50)
+2. Calculates ideal equal-size positions
+3. For each ideal position, searches a ±35% window for the highest-scored candidate
+4. Ensures minimum distance between cuts to prevent tiny parts
+5. Falls back to nearest candidate if no good match in window
+
+## EPUB Conversion Pipeline
+
+Uses ebooklib to parse EPUB structure:
+1. Read EPUB ZIP, extract spine order and metadata
+2. Extract all images to output directory
+3. Convert each HTML chapter to Markdown via markdownify (ATX headings)
+4. Join chapters with `---` separators in spine order
+5. Apply page_from/page_to chapter filtering if specified
+
+## PDF Conversion Pipeline
+
+Uses Marker library:
+- `create_model_dict()` — loads Surya OCR, layout detection, table recognition models
+- `PdfConverter` — main conversion class
+- `text_from_rendered()` — extracts markdown text and images
+- Models loaded once (singleton pattern with threading.Lock)
+- For scanned PDFs: `force_ocr=True`
+- Page range: PyMuPDF extracts subset into temp PDF before Marker sees it
+
+## Image Embedding
+
+All download endpoints embed images as base64 data URIs directly in the markdown:
+- `![alt](images/cover.jpeg)` → `![alt](data:image/jpeg;base64,...)`
+- Supported formats: PNG, JPEG, GIF, WebP, SVG
+- Each .md file is fully self-contained — no external dependencies
+
+## Frontend
+
+- Bilingual: Turkish (default) / English, one-click toggle
+- Dark theme (default) / Light theme with lavender accent palette
+- Inter + JetBrains Mono typography
+- Page/chapter range input after classification
+- Split parts input with live preview
+- Responsive design
+
+## Tech Stack
+
+- FastAPI + Uvicorn (ASGI web server)
+- PyMuPDF (PDF analysis, classification, page extraction)
+- Marker / marker-pdf (PDF→Markdown, 95.67% accuracy)
+- Surya (OCR engine, 90+ languages, embedded in Marker)
+- ebooklib (EPUB parsing)
+- markdownify (HTML→Markdown)
+- Vanilla HTML + CSS + JS (no framework)
+- marked.js (client-side Markdown rendering)
+
+## License
+
+GPL-3.0

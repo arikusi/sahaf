@@ -1,0 +1,21 @@
+# Sahaf
+
+> Local PDF & EPUB to Markdown converter with OCR, smart splitting, and page-range selection. Uses Marker (95.67% accuracy) and Surya OCR (90+ languages). No cloud APIs.
+
+## Docs
+
+- [README](README.md): Overview, install, quick start, API reference
+- [llms-full.txt](llms-full.txt): Complete documentation in single file
+
+## Key Files
+
+- `backend/main.py`: FastAPI app entry point
+- `backend/api.py`: All REST API endpoints (upload, classify, convert, download, split-preview)
+- `backend/classifier.py`: PyMuPDF-based digital/scanned PDF detection
+- `backend/converter.py`: Marker wrapper for PDF→Markdown conversion with page range
+- `backend/epub_converter.py`: EPUB→Markdown conversion (ebooklib + markdownify)
+- `backend/splitter.py`: Smart markdown splitting at heading/paragraph boundaries
+- `backend/models.py`: Data models (TaskState, PdfType, TaskStatus)
+- `backend/config.py`: Configuration constants and paths
+- `frontend/index.html`: Single-page web UI (bilingual TR/EN)
+- `frontend/js/lang.js`: i18n strings
