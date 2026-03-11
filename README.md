@@ -2,6 +2,10 @@
 
 Local PDF & EPUB to Markdown converter with automatic digital/scanned detection, OCR support, smart splitting, and page-range selection. Converts books to clean, self-contained Markdown files with embedded images using Marker (95.67% accuracy) and Surya OCR (90+ languages). No cloud APIs — runs entirely on your hardware.
 
+<p align="center">
+  <img src="assets/sahaf_demo.gif" alt="Sahaf EPUB to Markdown demo" width="720">
+</p>
+
 ## Features
 
 - **PDF & EPUB support** — handles both formats natively
