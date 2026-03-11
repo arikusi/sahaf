@@ -3,7 +3,7 @@
 Local PDF & EPUB to Markdown converter with automatic digital/scanned detection, OCR support, smart splitting, and page-range selection. Converts books to clean, self-contained Markdown files with embedded images using Marker (95.67% accuracy) and Surya OCR (90+ languages). No cloud APIs — runs entirely on your hardware.
 
 <p align="center">
-  <video src="https://github.com/user-attachments/assets/76b2484c-b69b-4cf2-8436-1ef2ae3cef20" width="720" autoplay loop muted>
+  <video src="https://github.com/user-attachments/assets/76b2484c-b69b-4cf2-8436-1ef2ae3cef20" width="480" autoplay loop muted>
   </video>
 </p>
 
