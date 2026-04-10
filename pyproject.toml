@@ -1,6 +1,6 @@
 [project]
 name = "sahaf"
-version = "0.1.0"
+version = "0.2.0"
 description = "PDF to Markdown converter with OCR support — local, fast, accurate."
 license = "GPL-3.0-or-later"
 readme = "README.md"

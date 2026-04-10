@@ -13,7 +13,7 @@ from backend.config import FRONTEND_DIR
 app = FastAPI(
     title="Sahaf",
     description="PDF to Markdown converter with OCR support.",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.include_router(api_router)

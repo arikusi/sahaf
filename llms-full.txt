@@ -15,8 +15,10 @@ Marker models (~2-3GB) are downloaded automatically on first conversion. Require
 ## Run
 
 ```bash
-uvicorn backend.main:app --reload
+sahaf
 ```
+
+Or manually: `uvicorn backend.main:app --reload`
 
 Open http://localhost:8000.
 
@@ -31,6 +33,7 @@ sahaf/
 │   ├── converter.py         # Marker PDF→Markdown + page range extraction
 │   ├── epub_converter.py    # EPUB→Markdown (ebooklib + markdownify)
 │   ├── splitter.py          # Smart markdown splitting
+│   ├── utils.py             # Shared image path rewriting
 │   ├── models.py            # Dataclass schemas
 │   └── config.py            # Constants and paths
 ├── frontend/
