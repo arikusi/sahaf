@@ -20,7 +20,7 @@ const UI = {
     }
 
     const badge = document.getElementById("pdfTypeBadge");
-    const labels = { digital: "Digital", scanned: "Scanned", mixed: "Mixed", unknown: "?" };
+    const labels = { digital: t("badgeDigital"), scanned: t("badgeScanned"), mixed: t("badgeMixed"), unknown: "?" };
     badge.textContent = labels[pdfType] || pdfType;
     badge.className = "badge badge-" + pdfType;
 
@@ -84,7 +84,7 @@ const UI = {
       const kb = (p.chars / 1024).toFixed(1);
       const label = p.starts_with || "...";
       return `<div class="split-part-row">
-        <span class="split-part-num">Part ${p.part}</span>
+        <span class="split-part-num">${t("splitPartLabel")} ${p.part}</span>
         <span class="split-part-label">${this._esc(label)}</span>
         <span class="split-part-size">${kb} KB</span>
       </div>`;
