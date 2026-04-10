@@ -12,6 +12,7 @@ from markdownify import markdownify as md
 
 from backend.config import OUTPUT_DIR
 from backend.models import TaskState, TaskStatus
+from backend.utils import rewrite_image_paths, rewrite_image_paths_for_zip
 
 log = logging.getLogger(__name__)
 
@@ -76,21 +77,9 @@ def convert_epub(task: TaskState, epub_path: Path, page_from: int = 0, page_to: 
         # Combine all sections
         markdown = "\n\n---\n\n".join(sections)
 
-        # Rewrite image paths for web display
-        import re
-
-        def rewrite_web(match: re.Match) -> str:
-            alt = match.group(1)
-            img_name = match.group(2).split("/")[-1]
-            return f"![{alt}](/api/images/{task.task_id}/{img_name})"
-
-        def rewrite_zip(match: re.Match) -> str:
-            alt = match.group(1)
-            img_name = match.group(2).split("/")[-1]
-            return f"![{alt}](images/{img_name})"
-
-        web_markdown = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", rewrite_web, markdown)
-        zip_markdown = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", rewrite_zip, markdown)
+        # Rewrite image paths
+        web_markdown = rewrite_image_paths(markdown, task.task_id)
+        zip_markdown = rewrite_image_paths_for_zip(markdown)
 
         # Save markdown files
         md_path = OUTPUT_DIR / task.task_id / "output.md"

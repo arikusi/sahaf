@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
-import re
 import threading
 from pathlib import Path
 
 from backend.config import OUTPUT_DIR
 from backend.models import PdfType, TaskState, TaskStatus
+from backend.utils import rewrite_image_paths, rewrite_image_paths_for_zip
 
 log = logging.getLogger(__name__)
 
@@ -28,26 +28,6 @@ def _get_models() -> dict:
                 _models = create_model_dict()
                 log.info("Marker models ready.")
     return _models
-
-
-def _rewrite_image_paths(markdown: str, task_id: str) -> str:
-    """Rewrite image paths in markdown to point to our API endpoint."""
-    def replacer(match: re.Match) -> str:
-        alt = match.group(1)
-        img_name = match.group(2).split("/")[-1]
-        return f"![{alt}](/api/images/{task_id}/{img_name})"
-
-    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", replacer, markdown)
-
-
-def _rewrite_for_zip(markdown: str) -> str:
-    """Rewrite image paths for ZIP download (relative images/ dir)."""
-    def replacer(match: re.Match) -> str:
-        alt = match.group(1)
-        img_name = match.group(2).split("/")[-1]
-        return f"![{alt}](images/{img_name})"
-
-    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", replacer, markdown)
 
 
 def _extract_page_range(pdf_path: Path, page_from: int, page_to: int) -> Path:
@@ -119,14 +99,14 @@ def convert_pdf(task: TaskState, pdf_path: Path, page_from: int = 0, page_to: in
             image_names.append(img_name)
 
         # Rewrite image paths for web display
-        markdown = _rewrite_image_paths(text, task.task_id)
+        markdown = rewrite_image_paths(text, task.task_id)
 
         # Save markdown file
         md_path = OUTPUT_DIR / task.task_id / "output.md"
         md_path.write_text(markdown, encoding="utf-8")
 
         # Also save ZIP-friendly version
-        zip_md = _rewrite_for_zip(text)
+        zip_md = rewrite_image_paths_for_zip(text)
         zip_md_path = OUTPUT_DIR / task.task_id / "output_zip.md"
         zip_md_path.write_text(zip_md, encoding="utf-8")
 

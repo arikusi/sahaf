@@ -11,6 +11,8 @@ import uuid
 import zipfile
 from pathlib import Path
 
+import ebooklib
+from ebooklib import epub as _epub
 from fastapi import APIRouter, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 
@@ -88,8 +90,6 @@ async def classify(task_id: str):
 
     if is_epub:
         # EPUB files are always digital text — skip PDF classification
-        import ebooklib
-        from ebooklib import epub as _epub
         book = _epub.read_epub(str(pdf_path))
         items_by_id = {i.get_id(): i for i in book.get_items()}
         chapter_count = sum(
