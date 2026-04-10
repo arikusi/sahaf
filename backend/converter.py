@@ -52,8 +52,8 @@ def convert_pdf(task: TaskState, pdf_path: Path, page_from: int = 0, page_to: in
         task.status = TaskStatus.CONVERTING
         task.progress = 5
 
-        from marker.converters.pdf import PdfConverter
         from marker.config.parser import ConfigParser
+        from marker.converters.pdf import PdfConverter
         from marker.output import text_from_rendered
 
         log.info("[%s] Loading models...", task.task_id)

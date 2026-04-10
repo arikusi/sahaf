@@ -51,7 +51,8 @@ async def upload_pdf(file: UploadFile):
     content = await file.read()
     size_mb = len(content) / (1024 * 1024)
     if size_mb > MAX_FILE_SIZE_MB:
-        raise HTTPException(400, f"Dosya çok büyük ({size_mb:.1f}MB). Maksimum: {MAX_FILE_SIZE_MB}MB")
+        msg = f"Dosya çok büyük ({size_mb:.1f}MB). Maksimum: {MAX_FILE_SIZE_MB}MB"
+        raise HTTPException(400, msg)
 
     task_id = uuid.uuid4().hex[:12]
     task_dir = UPLOAD_DIR / task_id
@@ -199,7 +200,6 @@ async def download_md(task_id: str):
     embedded = _embed_images(full_text, images_dir)
 
     stem = Path(task.filename).stem
-    safe_name = _safe_filename(f"{stem}.md")
     encoded = urllib.parse.quote(f"{stem}.md")
 
     return StreamingResponse(
@@ -318,7 +318,8 @@ async def download_zip(
             end = min(range_to, total) if range_to else total
 
             if start > total:
-                raise HTTPException(400, f"Baslangic ({start}) toplam parca sayisindan ({total}) buyuk.")
+                msg = f"Baslangic ({start}) toplam parca sayisindan ({total}) buyuk."
+                raise HTTPException(400, msg)
 
             for i, chunk in enumerate(chunks, 1):
                 if start <= i <= end:

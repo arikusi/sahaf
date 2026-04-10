@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pymupdf
 
-from backend.config import MIN_TEXT_LENGTH, IMAGE_COVERAGE_THRESHOLD
+from backend.config import IMAGE_COVERAGE_THRESHOLD, MIN_TEXT_LENGTH
 from backend.models import PdfType
 
 

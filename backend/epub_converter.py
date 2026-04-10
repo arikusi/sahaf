@@ -6,8 +6,8 @@ import logging
 from pathlib import Path
 
 import ebooklib
-from ebooklib import epub
 from bs4 import BeautifulSoup
+from ebooklib import epub
 from markdownify import markdownify as md
 
 from backend.config import OUTPUT_DIR
