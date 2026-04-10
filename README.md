@@ -1,5 +1,9 @@
 # Sahaf
 
+[![CI](https://github.com/arikusi/sahaf/actions/workflows/ci.yml/badge.svg)](https://github.com/arikusi/sahaf/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/sahaf)](https://pypi.org/project/sahaf/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 Local PDF & EPUB to Markdown converter with automatic digital/scanned detection, OCR support, smart splitting, and page-range selection. Converts books to clean, self-contained Markdown files with embedded images using Marker (95.67% accuracy) and Surya OCR (90+ languages). No cloud APIs — runs entirely on your hardware.
 
 <p align="center">
@@ -24,6 +28,12 @@ Local PDF & EPUB to Markdown converter with automatic digital/scanned detection,
 ## Install
 
 ```bash
+pip install sahaf
+```
+
+Or from source:
+
+```bash
 git clone https://github.com/arikusi/sahaf.git
 cd sahaf
 pip install -e .
@@ -34,7 +44,7 @@ pip install -e .
 ## Quick Start
 
 ```bash
-uvicorn backend.main:app --reload
+sahaf
 ```
 
 Open `http://localhost:8000` in your browser.
