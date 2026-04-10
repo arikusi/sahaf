@@ -19,3 +19,13 @@ app = FastAPI(
 app.include_router(api_router)
 
 app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+
+
+def run() -> None:
+    """Launch the Sahaf development server."""
+    import uvicorn
+    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000)
+
+
+if __name__ == "__main__":
+    run()

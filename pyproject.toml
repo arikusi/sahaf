@@ -35,6 +35,9 @@ Repository = "https://github.com/arikusi/sahaf"
 Issues = "https://github.com/arikusi/sahaf/issues"
 Changelog = "https://github.com/arikusi/sahaf/blob/main/CHANGELOG.md"
 
+[project.scripts]
+sahaf = "backend.main:run"
+
 [tool.setuptools.packages.find]
 include = ["backend*"]
 
