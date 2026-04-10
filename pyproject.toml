@@ -2,7 +2,23 @@
 name = "sahaf"
 version = "0.1.0"
 description = "PDF to Markdown converter with OCR support — local, fast, accurate."
+license = "GPL-3.0-or-later"
+readme = "README.md"
 requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["pdf", "epub", "markdown", "ocr", "converter", "marker", "surya"]
 dependencies = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
@@ -12,6 +28,12 @@ dependencies = [
     "ebooklib>=0.18",
     "markdownify>=0.11.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/arikusi/sahaf"
+Repository = "https://github.com/arikusi/sahaf"
+Issues = "https://github.com/arikusi/sahaf/issues"
+Changelog = "https://github.com/arikusi/sahaf/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["backend*"]
