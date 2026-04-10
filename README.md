@@ -33,10 +33,6 @@ pip install -e .
 
 ## Quick Start
 
-**Windows:** Double-click `install.bat` then `start.bat`.
-
-**Manual:**
-
 ```bash
 uvicorn backend.main:app --reload
 ```
